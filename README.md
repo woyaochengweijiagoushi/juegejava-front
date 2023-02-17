@@ -1,5 +1,12 @@
 # juegejava-front
 
+## In Progress
+[x] TypeScript
+[] Pretier
+[] Eslint
+[] CommitLint + LintStage
+[] Husky
+[] Tailwind
 ## Project setup
 ```
 npm install
