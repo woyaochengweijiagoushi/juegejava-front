@@ -42,6 +42,9 @@
     "typescript": "~4.5.5"
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix"
+    "*.js": "eslint --cache --fix",
+    "*.js": "npx prettier --write .",
+    "*.ts": "npx prettier --write .",
+    "*.vue": "npx prettier --write ."
   }
 }
