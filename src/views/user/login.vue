@@ -31,6 +31,7 @@
 
 <script>
 import { toRefs,reactive,watch,inject} from 'vue';
+import { useRouter } from 'vue-router'
 // import { ElInput } from "element-plus";
 
 //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
@@ -64,9 +65,8 @@ export default {
       console.log('pwd.nameChars',pwd.nameChars)
     })
 
-    var vm = this
-
     const $axios = inject('$axios')
+    var router = useRouter();
     const isLoginValid = ()=>{
       
       // if(isPwdValid1 && isPwdValid2 && isPwdValid3){
@@ -81,13 +81,13 @@ export default {
         //                     })   
         debugger
      
-    $axios.post("/hello",{pwd}).then((resp) => {    
-      console.log("后端返回结果",resp.data)
-      vm.$router.push("/home");
-    }).catch((err) => {
-      console.log(err)
-    })
-
+        router.push("main");
+    // $axios.post("/hello",{pwd}).then((resp) => {    
+    //   console.log("后端返回结果",resp.data)
+    //   vm.$router.push("/index");
+    // }).catch((err) => {
+    //   console.log(err)
+    // })
       }
 
 
