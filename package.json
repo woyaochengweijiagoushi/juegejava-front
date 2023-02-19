@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "jest"
   },
   "dependencies": {
     "autoprefixer": "^10",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
+    "@testing-library/vue": "^6.6.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",
@@ -46,8 +48,6 @@
     "vue-cli-plugin-tailwind": "~3.0.0"
   },
   "lint-staged": {
-    "*.js": "npx prettier --write .",
-    "*.ts": "npx prettier --write .",
-    "*.vue": "npx prettier --write ."
+    "*.ts": "npx prettier --write ."
   }
 }
