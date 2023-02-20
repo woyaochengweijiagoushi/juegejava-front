@@ -4,63 +4,63 @@
 /* eslint-disable spaced-comment */
 /* eslint-disable no-tabs */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path')
+const path = require("path");
 // const UglifyPlugin = require('uglifyjs-webpack-plugin')
 // const CompressionWebpackPlugin = require('compression-webpack-plugin');
 /* 需要npm或者yarn 安装两个第三方
   npm i -D  uglifyjs-webpack-plugin 或 npm yarn add -D  uglifyjs-webpack-plugin
   npm i -D  compression-webpack-plugin 或 yarn add -D  compression-webpack-plugin
 */
-const {
-  defineConfig
-} = require('@vue/cli-service')
-const AutoImport = require('unplugin-auto-import/webpack')
-const Components = require('unplugin-vue-components/webpack')
-const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
+const { defineConfig } = require("@vue/cli-service");
+const AutoImport = require("unplugin-auto-import/webpack");
+const Components = require("unplugin-vue-components/webpack");
+const { ElementPlusResolver } = require("unplugin-vue-components/resolvers");
 
 function resolve(dir) {
-  return path.join(__dirname, dir)
+  return path.join(__dirname, dir);
 }
 module.exports = defineConfig({
   transpileDependencies: true,
-  publicPath: './', // 基本路径
-  outputDir: 'dist', // 输出文件目录
+  publicPath: "./", // 基本路径
+  outputDir: "dist", // 输出文件目录
   lintOnSave: false, // eslint-loader 是否在保存的时候检查
-  assetsDir: 'static', // 放置生成的静态资源 (js、css、img、fonts) 的 (相对于 outputDir 的) 目录。
+  assetsDir: "static", // 放置生成的静态资源 (js、css、img、fonts) 的 (相对于 outputDir 的) 目录。
   pages: undefined, // 以多页模式构建应用程序。
   runtimeCompiler: false, // 是否使用包含运行时编译器的 Vue 构建版本
   // 是否为 Babel 或 TypeScript 使用 thread-loader。该选项在系统的 CPU 有多于一个内核时自动启用，仅作用于生产构建，在适当的时候开启几个子进程去并发的执行压缩
-  parallel: require('os').cpus().length > 1,
+  parallel: require("os").cpus().length > 1,
   productionSourceMap: false, // 生产环境是否生成 sourceMap 文件，一般情况不建议打开
   // webpack配置
   // 对内部的 webpack 配置进行更细粒度的修改 https://github.com/neutrinojs/webpack-chain see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   chainWebpack: (config) => {
     //修改文件引入自定义路径
-    config.resolve.alias.set('@', resolve('src'));
+    config.resolve.alias.set("@", resolve("src"));
   },
   //调整 webpack 配置 https://cli.vuejs.org/zh/guide/webpack.html#%E7%AE%80%E5%8D%95%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F
   configureWebpack: (config) => {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       // 为生产环境修改配置...
-      config.mode = 'production';
+      config.mode = "production";
       // 利用splitChunks将每个依赖包单独打包，在生产环境下配置
       // 开启gzip压缩
       config.plugins.push(
         new CompressionWebpackPlugin({
-          algorithm: 'gzip',
+          algorithm: "gzip",
           test: /\.ts$|\.html$|\.json$|\.css/,
           threshold: 10240,
           minRatio: 0.8,
         })
       );
-      config.plugins.push(    
+      config.plugins.push(
         AutoImport({
-        resolvers: [ElementPlusResolver()],
-      }),)
-      config.plugins.push(    
+          resolvers: [ElementPlusResolver()],
+        })
+      );
+      config.plugins.push(
         Components({
-        resolvers: [ElementPlusResolver()],
-      }),)
+          resolvers: [ElementPlusResolver()],
+        })
+      );
       // 开启分离js
       // config.optimization = {
       //   runtimeChunk: 'single',
@@ -98,19 +98,19 @@ module.exports = defineConfig({
       // };
       // 取消webpack警告的性能提示
       config.performance = {
-        hints: 'warning',
+        hints: "warning",
         //入口起点的最大体积
         maxEntrypointSize: 50000000,
         //生成文件的最大体积
         maxAssetSize: 30000000,
         //只给出 ts 文件的性能提示
         assetFilter: function (assetFilename) {
-          return assetFilename.endsWith('.ts');
+          return assetFilename.endsWith(".ts");
         },
       };
     } else {
       // 为开发环境修改配置...
-      config.mode = 'development';
+      config.mode = "development";
 
       // config.optimization = {
       //   runtimeChunk: 'single',
@@ -150,11 +150,10 @@ module.exports = defineConfig({
     //   },
     // },
     loaderOptions: {
-    sass: {
-      additionalData:
-          `@import "@/styles/main.scss";`
-      }
-    }
+      sass: {
+        additionalData: `@import "@/styles/main.scss";`,
+      },
+    },
   },
   pwa: {}, // PWA 插件相关配置
   // webpack-dev-server 相关配置 https://webpack.js.org/configuration/dev-server/
@@ -168,8 +167,8 @@ module.exports = defineConfig({
     // proxy: 'http://localhost:8000'   // 配置跨域处理,只有一个代理
     proxy: {
       //配置自动启动浏览器
-      '/api': {
-        target: 'http://47.111.184.60:30085',
+      "/api": {
+        target: "http://47.111.184.60:30085",
         changeOrigin: true,
         // ws: true,//websocket支持
         secure: false,
@@ -177,7 +176,6 @@ module.exports = defineConfig({
         // pathRewrite: {
         //     '^/api': ''
         // }
-
       },
       // '/api1': {
       //   target: 'http://172.16.68.134:8089',
@@ -189,4 +187,4 @@ module.exports = defineConfig({
   },
   // 第三方插件配置 https://www.npmjs.com/package/vue-cli-plugin-style-resources-loader
   pluginOptions: {},
-})
+});
