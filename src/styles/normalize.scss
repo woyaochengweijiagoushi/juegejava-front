@@ -74,9 +74,9 @@ pre {
  */
 
 a {
-  background-color: transparent;
+  // background-color: transparent;
+  text-decoration: underline dotted red;
 }
-
 /**
  * 1. Remove the bottom border in Chrome 57-
  * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.

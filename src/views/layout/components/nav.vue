@@ -19,7 +19,7 @@ export default {
 @import url("../../../styles/config.scss");
 
 #nav-wrap {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: $navWidth;

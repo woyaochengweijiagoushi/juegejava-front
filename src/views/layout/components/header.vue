@@ -16,7 +16,7 @@ export default {};
 @import url("../../../styles/config.scss");
 
 #header-wrap {
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   left: $navWidth;

@@ -18,7 +18,7 @@ const routes = [
       {
         path: "/main",
         name: "main",
-        component: () => import("../views/console/index.vue"),
+        component: () => import("../views/resource/resourceQuery.vue"),
       },
     ],
   },

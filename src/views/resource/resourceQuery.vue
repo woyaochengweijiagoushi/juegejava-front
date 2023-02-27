@@ -2,8 +2,8 @@
   <div class="form">
     <div>
     <el-form :model="form" label-width="120px" class="form">
-    <el-form-item label="前端 or 后端">
-      <el-radio-group v-model="form.resource">
+    <el-form-item label="大分类">
+      <el-radio-group v-model="form.frontendOrBackend">
         <el-radio label="前端" />
         <el-radio label="后端" />
       </el-radio-group>
@@ -11,40 +11,42 @@
 
     <el-form-item label="标签">
     <el-select
-      v-model="form.ages"
+      v-model="form.tag"
       placeholder="请选择"
       multiple
       style="width: 320px;"
     >
       <el-option
-        v-for="item in ageList"
+        v-for="item in tags"
         :key="item"
         :label="item"
         :value="item"
       ></el-option>
     </el-select>
-
     </el-form-item>
+
     <el-form-item label="免费">
-      <el-switch v-model="form.delivery" />
+      <el-switch v-model="form.forFree" />
     </el-form-item>
 
     <el-form-item label="已解锁">
-      <el-switch v-model="form.delivery" />
+      <el-switch v-model="form.unlocked" />
     </el-form-item>
 
 
     <el-form-item label="资源类型">
-      <el-checkbox-group v-model="form.type">
-        <el-checkbox label="电子书" name="type" />
-        <el-checkbox label="官方文档" name="type" />
-        <el-checkbox label="面试题" name="type" />
-        <el-checkbox label="学习视频" name="type" />
-        <el-checkbox label="面试题录音" name="type" />
-      </el-checkbox-group>
+  <el-checkbox-group
+    v-model="form.checkedTypes"
+    @change="handleCheckedTypesChange"
+  >
+    <el-checkbox v-for="type in types" :key="type" :label="type">{{
+      type
+    }}</el-checkbox>
+  </el-checkbox-group>
+
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="onSubmit">查询</el-button>
+      <el-button  @click="onSubmit">查询</el-button>
       <el-button>上传</el-button>
     </el-form-item>
   </el-form>
@@ -54,33 +56,30 @@
       <el-table :data="batchTableData" height="565"
                 :cell-style="{padding: '2px 0'}" class="table" ref="multipleTable" header-cell-class-name="table-header" @selection-change="selectChanges">
         <el-table-column type="selection" width="40"/>
-        <el-table-column prop="allNum" label="资源简介" >
-          <template #default="scope">{{ scope.row.allNum }}</template>
+        <el-table-column prop="description" label="资源简介" >
+          <template #default="scope">{{ scope.row.description }}</template>
         </el-table-column>
-        <el-table-column prop="toBeSent" label="资源大小"  >
-          <template #default="scope">{{ scope.row.toBeSent }}</template>
+        <el-table-column prop="resourceSize" label="资源大小"  >
+          <template #default="scope">{{ scope.row.resourceSize }}</template>
         </el-table-column>
-        <el-table-column prop="createTime" label="资源平均评分"  >
-          <template #default="scope">{{ scope.row.createTime }}</template>
+        <el-table-column prop="score" label="资源最近10次评分"  >
+          <template #default="scope">{{ scope.row.score }}</template>
         </el-table-column>
-        <el-table-column prop="batchNo2" label="资源链接"   v-if="true">
-          <template #default="scope">{{ scope.row.batchNo2 }}</template>
+        <el-table-column prop="linkStr" label="资源链接"   v-if="true">
+          <template #default="scope"><a :href="scope.row.linkStr">{{ scope.row.linkStr }}</a></template>
         </el-table-column>
-        <el-table-column prop="batchNo3" label="所属网盘"   v-if="true">
-          <template #default="scope">{{ scope.row.batchNo3 }}</template>
+        <el-table-column prop="isActive" label="是否已失效"   v-if="true">
+          <template #default="scope">{{ scope.row.isActive }}</template>
         </el-table-column>
-        <el-table-column prop="batchNo4" label="是否已失效"   v-if="true">
-          <template #default="scope">{{ scope.row.batchNo4 }}</template>
-        </el-table-column>
-        <el-table-column prop="batchNo" label="提取码"   v-if="true">
-          <template #default="scope">{{ scope.row.batchNo }}</template>
+        <el-table-column prop="extractionCode" label="提取码"   v-if="true">
+          <template #default="scope">{{ scope.row.extractionCode }}</template>
         </el-table-column>
         <el-table-column label="操作" >
             <template #default="scope">
-              <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">查看详情
-              <el-button type="primary">解锁</el-button>
-              <el-button type="primary" @click="goExcel">评分(已解锁资源可评分)</el-button>
-              </el-button>
+              <!-- <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">查看详情 -->
+              <el-button>解锁</el-button>
+              <el-button @click="goExcel">评分(已解锁资源可评分)</el-button>
+              <!-- </el-button> -->
             </template>
         </el-table-column>
       </el-table>
@@ -151,8 +150,11 @@
 <!-- //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 //例如：import 《组件名称》 from '《组件路径》' -->
 <script>
-  import { ref, reactive, toRefs } from "vue";
-  import { ElMessage, ElMessageBox } from "element-plus";
+import { toRefs,ref, reactive, watch, inject } from "vue";
+import { useRouter } from "vue-router";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { listResource } from "@/api/resource.js"
+ 
   // import {FL_SERVICE} from "../../api/config";
   // import {
   //   queryAddCustlist,
@@ -176,6 +178,7 @@
       }
     },
     setup() {
+
       const addParams = reactive({
         reqTicket: sessionStorage.getItem("reqClientTicket")
       });
@@ -308,13 +311,6 @@
 
       const addVisible = ref(false);
 
-      let form = reactive({
-        id:"",
-        name: "",
-        isBackToCenter:""
-      });
-      let idx = -1;
-
       const selectChanges = (val) => {
         val.forEach(item =>{
           console.log(item.id)
@@ -361,22 +357,78 @@
         })
       }
 
-      const state = reactive({
-        ageList: ["全部", "jvm", "并发", "vue", "typescript"],
-        form1: {
-          ages: [],
+
+      const onSubmit = () =>{
+
+        console.log("checkedType:"+data.form.checkedTypes)
+        console.log("forFree:"+data.form.forFree)
+        console.log("frontendOrBackend:"+data.form.frontendOrBackend)
+        console.log("tag:"+data.form.tag)
+        console.log("unlocked:"+data.form.unlocked)
+
+
+        // batchTableData.value = [
+        //   {description:"这是套缓存学习视频，从cdn到nginx到前端到本地到分布式到数据库各个层级的缓存学习视频",
+        //   resourceSize:"2G",  
+        //   score:"4 5 7 10 8",
+        //   linkStr:"https://pan.baidu.com/s/1M_3GcftT3CPWhrNy2AqdsA",
+        //   isActive:"有效",
+        //   extractionCode:"v08t"
+        // }
+        // ]
+
+
+      // // debugger;
+
+      // router.push("main");
+      listResource(data.form).then((resp) => {
+        console.log("后端返回结果",resp.data)
+
+        batchTableData.value = resp.data
+        // vm.$router.push("/index");
+      }).catch((err) => {
+        console.log(err)
+      })
+      }
+
+      const data = reactive({
+        tags: ["全部", "jvm", "并发", "vue", "typescript"],
+        types: ["学习视频","电子书", "官方文档", "面试题", "面试题录音"],
+        form: {
+          frontendOrBackend:"",
+          tag:"",
+          forFree:ref(true),
+          unlocked:ref(true),
+          checkedTypes:ref(['学习视频']),
         },
       });
 
-      const { ageList, form1 } = toRefs(state);
+      const checkAll = ref(false)
+      const isIndeterminate = ref(true)
+      const checkedTypes = ref(['Shanghai', 'Beijing'])
 
+      const handleCheckAllChange = (val) => {
+        checkedTypes.value = val ? types : []
+        isIndeterminate.value = false
+      }
+      const handleCheckedTypesChange = (value) => {
+        const checkedCount = value.length
+        checkAll.value = checkedCount === types.length
+        isIndeterminate.value = checkedCount > 0 && checkedCount < types.length
+      }
+
+      const { tags, types, form } = toRefs(data);
 
       return {
+        handleCheckAllChange,
+        handleCheckedTypesChange,
         query,
         tableData,
         pageTotal,
         addVisible,
+        tags,
         form,
+        types,
         // url,
         // downloadUrl,
         addParams,
@@ -400,8 +452,7 @@
         queryBatch,
         pageTotalBatch,
         resetSearch,
-        ageList,
-        form1
+        onSubmit
       };
     },
   };
@@ -439,14 +490,17 @@
     height: 40px;
   }
 
-  .container {
-    /* align-content: center; */
-    /* padding-left: 200px; */
-  }
-
-
   .form {
-    padding:20px  300px;
+    padding:120px  300px;
+    font-size: 50px;
   }
+
+  .el-form-item{
+    /* height: 50px; */
+  }
+
+  a {
+  text-decoration: underline;
+}
 
 </style>

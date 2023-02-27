@@ -16,10 +16,11 @@ export default {};
 @import url("../../../styles/config.scss");
 
 #body-wrap {
-  position: fixed;
+  position: absolute;
   top: 75px;
   right: 0;
   left: $navWidth;
+  padding-top: 100px;
   bottom: 0;
   border: 3px solid #f7f7f7;
   border-bottom: none;

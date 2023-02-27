@@ -1,5 +1,5 @@
 <template>
-  <div class="loginDiv">
+  <div class="indexDiv">
     <LayoutHeader></LayoutHeader>
     <LayoutBody></LayoutBody>
     <LayoutNav></LayoutNav>
@@ -20,4 +20,10 @@ export default {
   setup() {},
 };
 </script>
-<style scoped></style>
+<style scoped>
+
+  .indexDiv {
+    position: relative;
+  }
+
+</style>

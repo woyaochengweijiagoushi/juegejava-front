@@ -1,12 +1,11 @@
 <template>
   <div class="loginDiv">
     <el-row class="mb-4">
-      <el-button disabled>Default</el-button>
-      <el-button type="primary" disabled>Primary</el-button>
-      <el-button type="success" disabled>Success</el-button>
-      <el-button type="info" disabled>Info</el-button>
-      <el-button type="warning" disabled>Warning</el-button>
-      <el-button type="danger" disabled>Danger</el-button>
+      <el-button type="primary" disabled>觉</el-button>
+      <el-button type="success" disabled>哥</el-button>
+      <el-button type="info" disabled>资</el-button>
+      <el-button type="warning" disabled>源</el-button>
+      <el-button type="danger" disabled>网</el-button>
     </el-row>
     <br />
     <br />
@@ -88,12 +87,12 @@ export default {
       //登录 后台接口判断是否第一次登录 如果是第一次那么先注册再登录
 
       //登录成功后跳转首页
-      // let res=await proxy.$axios.post(
+      // let res=proxy.$axios.post(
       //                     '/user/login',
       //                     {
       //                       pwd
       //                     })
-      debugger;
+      // debugger;
 
       router.push("main");
       // $axios.post("/hello",{pwd}).then((resp) => {
