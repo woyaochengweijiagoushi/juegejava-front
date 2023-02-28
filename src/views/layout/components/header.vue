@@ -16,10 +16,6 @@ export default {};
 @import url("../../../styles/config.scss");
 
 #header-wrap {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: $navWidth;
   height: 75px;
   background-color: #fff;
   box-shadow: 0 3px 16px 0 rgba(0, 0, 0, 0.1);

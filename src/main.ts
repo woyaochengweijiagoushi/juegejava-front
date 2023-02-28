@@ -9,6 +9,3 @@ import "element-plus/dist/index.css";
 // axios.defaults.baseURL = 'http://localhost:8088'
 
 createApp(App).use(store).use(router).use(ElementPlus).mount("#app");
-
-
-

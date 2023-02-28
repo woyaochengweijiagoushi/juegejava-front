@@ -1,5 +1,5 @@
 <template>
-  <div id="nav-wrap">
+  <div class="side-navi w-56 fixed top-0 left-0 h-screen">
     <h1>nav</h1>
   </div>
 </template>
@@ -16,14 +16,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-@import url("../../../styles/config.scss");
-
-#nav-wrap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: $navWidth;
-  height: 100vh;
+.side-navi {
   background-color: #344a5f;
 }
 </style>
