@@ -1,79 +1,103 @@
 // Work In Progress !!!!!
 // Don't use !!!
-import axios from "axios";
+import axios, { Axios, AxiosRequestConfig } from "axios";
+import { reactive, ref } from "vue";
 
-const pendingMap = new Map();
+class RequestRecords {
+  private requestRecordMap: Map<string, Function>;
+  constructor() {
+    this.requestRecordMap = new Map();
+  }
 
-function myAxios(axiosConfig, customOptions) {
-  const service = axios.create({
-    baseURL: "http://localhost:8888", // 设置统一的请求前缀
-    timeout: 10000, // 设置统一的超时时长
-  });
-
-  let custom_options = Object.assign(
-    {
-      repeat_request_cancel: true,
-      loading: false,
-      reduct_data_format: true,
-      error_message_show: true,
-      code_message_show: false,
-    },
-    customOptions
-  );
-
-  service.interceptors.request.use(
-    (config) => {
-      removePending(config);
-      addPending(config);
-
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
+  public removeRequestRecordFromMap(config: AxiosRequestConfig) {
+    const pendingKey = this.generateRequestKey(config);
+    if (this.requestRecordMap.has(pendingKey)) {
+      const cancelToken = this.requestRecordMap.get(pendingKey);
+      cancelToken(pendingKey);
+      this.requestRecordMap.delete(pendingKey);
     }
-  );
+  }
 
-  service.interceptors.response.use(
-    (response) => {
-      removePending(response.config);
+  private generateRequestKey(config: AxiosRequestConfig) {
+    let { url, method, params, data } = config;
+    if (typeof data === "string") data = JSON.parse(data);
+    return [url, method, JSON.stringify(params), JSON.stringify(data)].join(
+      "&"
+    );
+  }
 
-      return custom_options.reduct_data_format ? response.data : response;
-    },
-    (error) => {
-      error.config && removePending(error.config);
-      return Promise.reject(error);
-    }
-  );
-
-  return service(axiosConfig);
+  public addRequestRecord(config: AxiosRequestConfig) {
+    const pendingKey = this.generateRequestKey(config);
+    config.cancelToken =
+      config.cancelToken ||
+      new axios.CancelToken((cancel) => {
+        if (!this.requestRecordMap.has(pendingKey)) {
+          this.requestRecordMap.set(pendingKey, cancel);
+        }
+      });
+  }
 }
+export class HttpClient {
+  private defaultConfig = {
+    baseURL: "http://localhost:8888",
+    timeout: 10000,
+  };
+  private requestRecordMap: RequestRecords;
+  private service: Axios;
 
-export default myAxios;
+  constructor(config: AxiosRequestConfig) {
+    this.service = axios.create({ ...this.defaultConfig, ...config });
+    this.requestRecordMap = new RequestRecords();
 
-function addPending(config) {
-  const pendingKey = getPendingKey(config);
-  config.cancelToken =
-    config.cancelToken ||
-    new axios.CancelToken((cancel) => {
-      if (!pendingMap.has(pendingKey)) {
-        pendingMap.set(pendingKey, cancel);
+    this.service.interceptors.request.use(
+      (config) => {
+        this.requestRecordMap.removeRequestRecordFromMap(config);
+        this.requestRecordMap.addRequestRecord(config);
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
       }
-    });
-}
+    );
 
-function removePending(config) {
-  const pendingKey = getPendingKey(config);
-  if (pendingMap.has(pendingKey)) {
-    const cancelToken = pendingMap.get(pendingKey);
-    cancelToken(pendingKey);
-    pendingMap.delete(pendingKey);
+    this.service.interceptors.response.use(
+      (response) => {
+        this.requestRecordMap.removeRequestRecordFromMap(response.config);
+
+        return response;
+      },
+      (error) => {
+        this.requestRecordMap.removeRequestRecordFromMap(error.config);
+        return Promise.reject(error);
+      }
+    );
+  }
+
+  public request(config: AxiosRequestConfig) {
+    return this.service.request(config);
   }
 }
 
-function getPendingKey(config) {
-  let { url, method, params, data } = config;
-  if (typeof data === "string") data = JSON.parse(data);
-  return [url, method, JSON.stringify(params), JSON.stringify(data)].join("&");
-}
+export default new HttpClient({});
 
-const useHttp = () => {};
+export const useHttp = (request: Promise<Object>) => {
+  let isLoading = ref(false);
+  let isFetching = ref(false);
+  let isError = ref(false);
+  let result = undefined;
+
+  request
+    .then((res) => {
+      result = res;
+    })
+    .catch((e) => {
+      result = e;
+    });
+
+  return {
+    isLoading,
+    isFetching,
+    isError,
+    result,
+  };
+};
