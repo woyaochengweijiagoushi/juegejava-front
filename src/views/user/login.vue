@@ -1,12 +1,5 @@
 <template>
   <div class="loginDiv">
-    <el-row class="mb-4">
-      <el-button type="primary" disabled>觉</el-button>
-      <el-button type="success" disabled>哥</el-button>
-      <el-button type="info" disabled>资</el-button>
-      <el-button type="warning" disabled>源</el-button>
-      <el-button type="danger" disabled>网</el-button>
-    </el-row>
     <br />
     <br />
     <br />
