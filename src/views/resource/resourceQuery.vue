@@ -51,12 +51,14 @@
           </el-form-item>
           <el-form-item>
             <el-button @click="onSubmit">查询</el-button>
-            <el-button>上传</el-button>
+            <el-button @click="() => (portalService.upload = true)"
+              >上传</el-button
+            >
           </el-form-item>
         </el-form>
       </div>
     </div>
-
+    <upload-portal />
     <el-table
       :data="batchTableData"
       height="565"
@@ -205,10 +207,12 @@
 <!-- //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 //例如：import 《组件名称》 from '《组件路径》' -->
 <script>
-import { toRefs, ref, reactive, watch, inject } from "vue";
+import { toRefs, ref, reactive, watch, inject, provide } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { listResource } from "@/api/resource.js";
+import UploadPortal from "./uploadPortal.vue";
+import { useCreatePortalService } from "../../hooks/portalService";
 
 // import {FL_SERVICE} from "../../api/config";
 // import {
@@ -230,6 +234,7 @@ export default {
       this.$router.push({ path: "/ExcelAdds" });
     },
   },
+  components: { UploadPortal },
   setup() {
     const addParams = reactive({
       reqTicket: sessionStorage.getItem("reqClientTicket"),
@@ -238,6 +243,8 @@ export default {
     const beginTime = ref("");
     const endTime = ref("");
     const batchFriends = ref(false);
+    const portalService = useCreatePortalService({ upload: false });
+
     const handleClose = () => {
       batchFriends.value = false;
       query.mobile = "";
@@ -399,7 +406,6 @@ export default {
 
     const downloadUrl = ref(process.env.BASE_URL + "/excelDemo.xlsx");
     const ExcelAddUrl = ref(process.env.BASE_URL + "/ExcelAdds");
-    console.log(ExcelAddUrl.value);
 
     const importAfter = () => {
       console.log("导入成功后调用此接口");
@@ -509,6 +515,7 @@ export default {
       pageTotalBatch,
       resetSearch,
       onSubmit,
+      portalService,
     };
   },
 };
