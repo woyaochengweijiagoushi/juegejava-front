@@ -1,29 +1,27 @@
 <template>
-  <div class="loginDiv">
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-
+  <div class="loginDiv h-screen pt-56 flex flex-col justify-start items-center">
     <h1>觉 哥 IT资源 网</h1>
-    <br />
-    <br />
-    <br />
-    <input
-      style="width: 400px"
-      placeholder="请输入8位数字建议身份证前后四位"
-      v-model="numbers"
-    />
-    <input placeholder="请输入生日 如0825" v-model="numbersbirthday" />
-    <input placeholder="请输入名字首字母 2-4位" v-model="pwdPart3" />
-    <button
-      @click="isLoginValid"
-      style="color: red; background-color: aquamarine"
-    >
-      进入首页
-    </button>
+    <el-form class="loginForm p-10">
+      <el-input
+        placeholder="请输入8位数字建议身份证前后四位"
+        v-model="numbers"
+        class="pb-6"
+      />
+      <el-input
+        class="pb-6"
+        placeholder="请输入生日 如0825"
+        v-model="numbersbirthday"
+      />
+      <el-input
+        class="pb-6"
+        placeholder="请输入名字首字母 2-4位"
+        v-model="pwdPart3"
+      />
+      <div class="flex flex-row justify-between item-center">
+        <el-button class="w-5/12" @click="isLoginValid"> 进入首页 </el-button>
+        <el-button @click="isLoginValid" class="w-5/12"> 注册 </el-button>
+      </div>
+    </el-form>
   </div>
 </template>
 
@@ -102,26 +100,18 @@ export default {
 </script>
 <style scoped>
 .loginDiv {
-  height: 100vh;
   background: url("../../image/idea壁纸6.jpg") no-repeat 100%;
   background-size: 100% 100%;
-  align-content: center;
-  /* margin-left: 300px; */
 }
 
-input,
-button {
-  height: 100px;
-  border-radius: 40%;
-  font-family: "Consolas", Times, serif;
-  font-size: 24px;
-  text-align: center;
+.loginForm {
+  width: 530px;
+  backdrop-filter: blur(3px);
 }
 
 h1 {
   font-size: 80px;
   color: aqua;
-  margin-top: 120px;
   /* margin-bottom: 100px; */
 }
 </style>
