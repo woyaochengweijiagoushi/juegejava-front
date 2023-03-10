@@ -207,22 +207,20 @@
 <!-- //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
 //例如：import 《组件名称》 from '《组件路径》' -->
 <script>
-import { toRefs, ref, reactive, watch, inject, provide } from "vue";
+import {
+  toRefs,
+  ref,
+  reactive,
+  watch,
+  inject,
+  provide,
+  defineAsyncComponent,
+} from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { listResource } from "@/api/resource.js";
-import UploadPortal from "./uploadPortal.vue";
 import { useCreatePortalService } from "../../hooks/portalService";
-
-// import {FL_SERVICE} from "../../api/config";
-// import {
-//   queryAddCustlist,
-//   addCustlistAft,
-//   queryBatchList,
-// } from "../../api/apiIndex";
-// import {
-//   REQ_SUCCESS_GET
-// } from "../../assets/js/commonConfig";
+const UploadPortal = defineAsyncComponent(() => import("./uploadPortal.vue"));
 
 export default {
   name: "addCustlist",
@@ -381,7 +379,6 @@ export default {
     };
 
     const uploadSuc = (response, file, fileList) => {
-      console.log(response);
       if (response.retCode == REQ_SUCCESS_GET) {
         ElMessage.success(response.body);
         addVisible.value = false;
