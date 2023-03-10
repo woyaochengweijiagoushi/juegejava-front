@@ -34,6 +34,11 @@ module.exports = defineConfig({
   // 对内部的 webpack 配置进行更细粒度的修改 https://github.com/neutrinojs/webpack-chain see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   chainWebpack: (config) => {
     //修改文件引入自定义路径
+    config.module
+      .rule("worker-loader")
+      .test(/\.worker\.js$/)
+      .use("worker-loader")
+      .loader("worker-loader");
     config.resolve.alias.set("@", resolve("src"));
   },
   //调整 webpack 配置 https://cli.vuejs.org/zh/guide/webpack.html#%E7%AE%80%E5%8D%95%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%B9%E5%BC%8F
